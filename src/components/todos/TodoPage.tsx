@@ -2,31 +2,17 @@
 import { Box, Container, Paper } from "@mui/material";
 import { useState } from "react";
 import { useDebounce } from "../../hooks/useDebounce";
-import { MOCK_TODOS } from "../../data/mockTodos";
-import type { Todo } from "../../types/todo";
 import TodoList from "./TodoList";
 import TodoToolbar from "./TodoToolbar";
+import { useTodos } from "../../context/todos/TodosContext";
 
 export default function TodoPage() {
-  const [todos, setTodos] = useState<Todo[]>(() => MOCK_TODOS);
+  const { todos, toggleTodo, deleteTodo, clearCompleted } = useTodos();
+
   const [search, setSearch] = useState("");
   const [hideDone, setHideDone] = useState(false);
 
   const debouncedSearch = useDebounce(search, 300);
-
-  const handleToggle = (id: string) => {
-    setTodos((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
-    );
-  };
-
-  const handleDelete = (id: string) => {
-    setTodos((prev) => prev.filter((t) => t.id !== id));
-  };
-
-  const handleClearCompleted = () => {
-    setTodos((prev) => prev.filter((t) => !t.completed));
-  };
 
   const completedCount = todos.filter((t) => t.completed).length;
   const normalizedSearch = debouncedSearch.trim().toLowerCase();
@@ -43,15 +29,15 @@ export default function TodoPage() {
         hideDone={hideDone}
         onHideDoneChange={setHideDone}
         completedCount={completedCount}
-        onClearCompleted={handleClearCompleted}
+        onClearCompleted={clearCompleted}
       />
 
       <Paper sx={{ mt: 2 }}>
         <Box sx={{ p: 1 }}>
           <TodoList
             todos={visibleTodos}
-            onToggle={handleToggle}
-            onDelete={handleDelete}
+            onToggle={toggleTodo}
+            onDelete={deleteTodo}
           />
         </Box>
       </Paper>
