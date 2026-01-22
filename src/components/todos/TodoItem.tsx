@@ -18,6 +18,8 @@ type Props = {
 };
 
 export default function TodoItem({ todo, onToggle, onDelete }: Props) {
+  const secondary = `${todo.subject} · Priority ${todo.priority} · ${todo.date}`;
+
   return (
     <ListItem
       secondaryAction={
@@ -44,7 +46,8 @@ export default function TodoItem({ todo, onToggle, onDelete }: Props) {
       </ListItemIcon>
 
       <ListItemText
-        primary={todo.title}
+        primary={todo.name}
+        secondary={secondary}
         primaryTypographyProps={{
           sx: {
             textDecoration: todo.completed ? "line-through" : "none",
