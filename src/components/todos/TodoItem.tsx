@@ -13,9 +13,11 @@ import type { Todo } from "../../types/todo";
 
 type Props = {
   todo: Todo;
+  onToggle: (id: string) => void;
+  onDelete: (id: string) => void;
 };
 
-export default function TodoItem({ todo }: Props) {
+export default function TodoItem({ todo, onToggle, onDelete }: Props) {
   return (
     <ListItem
       secondaryAction={
@@ -23,14 +25,22 @@ export default function TodoItem({ todo }: Props) {
           <IconButton edge="end" aria-label="edit" disabled>
             <EditIcon />
           </IconButton>
-          <IconButton edge="end" aria-label="delete" disabled>
+          <IconButton
+            edge="end"
+            aria-label="delete"
+            onClick={() => onDelete(todo.id)}
+          >
             <DeleteIcon />
           </IconButton>
         </Stack>
       }
     >
       <ListItemIcon>
-        <Checkbox edge="start" checked={todo.completed} disabled />
+        <Checkbox
+          edge="start"
+          checked={todo.completed}
+          onChange={() => onToggle(todo.id)}
+        />
       </ListItemIcon>
 
       <ListItemText
