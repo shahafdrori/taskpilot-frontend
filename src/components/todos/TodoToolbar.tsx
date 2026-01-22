@@ -8,6 +8,9 @@ type Props = {
 
   hideDone: boolean;
   onHideDoneChange: (value: boolean) => void;
+
+  completedCount: number;
+  onClearCompleted: () => void;
 };
 
 export default function TodoToolbar({
@@ -15,6 +18,8 @@ export default function TodoToolbar({
   onSearchChange,
   hideDone,
   onHideDoneChange,
+  completedCount,
+  onClearCompleted,
 }: Props) {
   return (
     <Stack
@@ -40,6 +45,14 @@ export default function TodoToolbar({
         }
         label="Hide done"
       />
+
+      <Button
+        variant="outlined"
+        onClick={onClearCompleted}
+        disabled={completedCount === 0}
+      >
+        Clear done
+      </Button>
 
       <Button variant="contained" startIcon={<AddIcon />} disabled>
         Add

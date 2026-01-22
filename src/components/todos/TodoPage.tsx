@@ -21,6 +21,11 @@ export default function TodoPage() {
     setTodos((prev) => prev.filter((t) => t.id !== id));
   };
 
+  const handleClearCompleted = () => {
+    setTodos((prev) => prev.filter((t) => !t.completed));
+  };
+
+  const completedCount = todos.filter((t) => t.completed).length;
   const normalizedSearch = search.trim().toLowerCase();
 
   const visibleTodos = todos
@@ -34,6 +39,8 @@ export default function TodoPage() {
         onSearchChange={setSearch}
         hideDone={hideDone}
         onHideDoneChange={setHideDone}
+        completedCount={completedCount}
+        onClearCompleted={handleClearCompleted}
       />
 
       <Paper sx={{ mt: 2 }}>
