@@ -6,14 +6,16 @@ import TodoItem from "./TodoItem";
 
 type Props = {
   todos: Todo[];
+  onToggle: (id: string) => void;
+  onDelete: (id: string) => void;
 };
 
-export default function TodoList({ todos }: Props) {
+export default function TodoList({ todos, onToggle, onDelete }: Props) {
   return (
     <List disablePadding>
       {todos.map((todo, idx) => (
         <React.Fragment key={todo.id}>
-          <TodoItem todo={todo} />
+          <TodoItem todo={todo} onToggle={onToggle} onDelete={onDelete} />
           {idx < todos.length - 1 && <Divider component="li" />}
         </React.Fragment>
       ))}

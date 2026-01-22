@@ -1,16 +1,30 @@
 //src/components/todos/TodoPage.tsx
 import { Box, Container, Paper } from "@mui/material";
+import { useState } from "react";
 import { MOCK_TODOS } from "../../data/mockTodos";
+import type { Todo } from "../../types/todo";
 import TodoList from "./TodoList";
 import TodoToolbar from "./TodoToolbar";
 
 export default function TodoPage() {
+  const [todos, setTodos] = useState<Todo[]>(() => MOCK_TODOS);
+
+  const handleToggle = (id: string) => {
+    setTodos((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
+    );
+  };
+
+  const handleDelete = (id: string) => {
+    setTodos((prev) => prev.filter((t) => t.id !== id));
+  };
+
   return (
-    <Container maxWidth="md" sx={{ py: 3 }}>
+    <Container maxWidth="sm" sx={{ py: 3 }}>
       <TodoToolbar />
       <Paper sx={{ mt: 2 }}>
         <Box sx={{ p: 1 }}>
-          <TodoList todos={MOCK_TODOS} />
+          <TodoList todos={todos} onToggle={handleToggle} onDelete={handleDelete} />
         </Box>
       </Paper>
     </Container>
