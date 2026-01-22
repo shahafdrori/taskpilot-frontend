@@ -11,6 +11,8 @@ type Props = {
 
   completedCount: number;
   onClearCompleted: () => void;
+
+  onAddClick: () => void;
 };
 
 export default function TodoToolbar({
@@ -20,6 +22,7 @@ export default function TodoToolbar({
   onHideDoneChange,
   completedCount,
   onClearCompleted,
+  onAddClick,
 }: Props) {
   return (
     <Stack
@@ -30,7 +33,7 @@ export default function TodoToolbar({
     >
       <TextField
         size="small"
-        label="Search"
+        label="Search by name"
         value={search}
         onChange={(e) => onSearchChange(e.target.value)}
         sx={{ flex: 1, minWidth: 220 }}
@@ -54,7 +57,7 @@ export default function TodoToolbar({
         Clear done
       </Button>
 
-      <Button variant="contained" startIcon={<AddIcon />} disabled>
+      <Button variant="contained" startIcon={<AddIcon />} onClick={onAddClick}>
         Add
       </Button>
     </Stack>
