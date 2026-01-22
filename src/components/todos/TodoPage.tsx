@@ -1,4 +1,4 @@
-//src/components/todos/TodoPage.tsx
+// src/components/todos/TodoPage.tsx
 import { Box, Container, Paper } from "@mui/material";
 import { useState } from "react";
 import { MOCK_TODOS } from "../../data/mockTodos";
@@ -8,6 +8,7 @@ import TodoToolbar from "./TodoToolbar";
 
 export default function TodoPage() {
   const [todos, setTodos] = useState<Todo[]>(() => MOCK_TODOS);
+  const [search, setSearch] = useState("");
 
   const handleToggle = (id: string) => {
     setTodos((prev) =>
@@ -19,12 +20,20 @@ export default function TodoPage() {
     setTodos((prev) => prev.filter((t) => t.id !== id));
   };
 
+  const visibleTodos = todos.filter((t) =>
+    t.title.toLowerCase().includes(search.trim().toLowerCase())
+  );
+
   return (
     <Container maxWidth="sm" sx={{ py: 3 }}>
-      <TodoToolbar />
+      <TodoToolbar search={search} onSearchChange={setSearch} />
       <Paper sx={{ mt: 2 }}>
         <Box sx={{ p: 1 }}>
-          <TodoList todos={todos} onToggle={handleToggle} onDelete={handleDelete} />
+          <TodoList
+            todos={visibleTodos}
+            onToggle={handleToggle}
+            onDelete={handleDelete}
+          />
         </Box>
       </Paper>
     </Container>
