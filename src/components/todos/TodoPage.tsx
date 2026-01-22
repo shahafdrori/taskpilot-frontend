@@ -1,6 +1,7 @@
 // src/components/todos/TodoPage.tsx
 import { Box, Container, Paper } from "@mui/material";
 import { useState } from "react";
+import { useDebounce } from "../../hooks/useDebounce";
 import { MOCK_TODOS } from "../../data/mockTodos";
 import type { Todo } from "../../types/todo";
 import TodoList from "./TodoList";
@@ -10,6 +11,8 @@ export default function TodoPage() {
   const [todos, setTodos] = useState<Todo[]>(() => MOCK_TODOS);
   const [search, setSearch] = useState("");
   const [hideDone, setHideDone] = useState(false);
+
+  const debouncedSearch = useDebounce(search, 300);
 
   const handleToggle = (id: string) => {
     setTodos((prev) =>
@@ -26,7 +29,7 @@ export default function TodoPage() {
   };
 
   const completedCount = todos.filter((t) => t.completed).length;
-  const normalizedSearch = search.trim().toLowerCase();
+  const normalizedSearch = debouncedSearch.trim().toLowerCase();
 
   const visibleTodos = todos
     .filter((t) => t.title.toLowerCase().includes(normalizedSearch))
