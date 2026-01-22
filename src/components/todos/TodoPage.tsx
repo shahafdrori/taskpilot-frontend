@@ -32,7 +32,7 @@ export default function TodoPage() {
   const normalizedSearch = debouncedSearch.trim().toLowerCase();
 
   const visibleTodos = todos
-    .filter((t) => t.title.toLowerCase().includes(normalizedSearch))
+    .filter((t) => t.name.toLowerCase().includes(normalizedSearch))
     .filter((t) => (hideDone ? !t.completed : true));
 
   return (
