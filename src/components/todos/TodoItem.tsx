@@ -15,16 +15,17 @@ type Props = {
   todo: Todo;
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
+  onEdit: (id: string) => void;
 };
 
-export default function TodoItem({ todo, onToggle, onDelete }: Props) {
+export default function TodoItem({ todo, onToggle, onDelete, onEdit }: Props) {
   const secondary = `${todo.subject} · Priority ${todo.priority} · ${todo.date}`;
 
   return (
     <ListItem
       secondaryAction={
         <Stack direction="row" spacing={0.5}>
-          <IconButton edge="end" aria-label="edit" disabled>
+          <IconButton edge="end" aria-label="edit" onClick={() => onEdit(todo.id)}>
             <EditIcon />
           </IconButton>
           <IconButton
