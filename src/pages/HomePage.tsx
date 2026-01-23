@@ -1,13 +1,12 @@
-// src/components/todos/TodoPage.tsx
-// src/components/todos/TodoPage.tsx
+//src/pages/HomePage.tsx
 import { Box, Container, Paper } from "@mui/material";
 import { useMemo, useState } from "react";
-import { useDebounce } from "../../hooks/useDebounce";
-import TodoList from "./TodoList";
-import TodoToolbar from "./TodoToolbar";
-import { useTodos } from "../../context/todos/TodosContext";
-import TodoDialog, { type TodoFormValues } from "./TodoDialog";
-import { TODO_SUBJECTS, getTodayISODate } from "../../constants/todos";
+import { useDebounce } from "../hooks/useDebounce";
+import TodoList from "../components/todos/TodoList";
+import TodoToolbar from "../components/todos/TodoToolbar";
+import { useTodos } from "../context/todos/TodosContext";
+import TodoDialog, { type TodoFormValues } from "../components/todos/TodoDialog";
+import { TODO_SUBJECTS, getTodayISODate } from "../constants/todos";
 
 function makeId() {
   if (
@@ -19,7 +18,7 @@ function makeId() {
   return String(Date.now());
 }
 
-export default function TodoPage() {
+export default function HomePage() {
   const { todos, toggleTodo, deleteTodo, clearCompleted, addTodo, updateTodo } =
     useTodos();
 
