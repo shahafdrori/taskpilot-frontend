@@ -7,16 +7,7 @@ import TodoToolbar from "../components/todos/TodoToolbar";
 import { useTodos } from "../context/todos/TodosContext";
 import TodoDialog, { type TodoFormValues } from "../components/todos/TodoDialog";
 import { TODO_SUBJECTS, getTodayISODate } from "../constants/todos";
-
-function makeId() {
-  if (
-    typeof globalThis.crypto !== "undefined" &&
-    typeof globalThis.crypto.randomUUID === "function"
-  ) {
-    return globalThis.crypto.randomUUID();
-  }
-  return String(Date.now());
-}
+import { makeId } from "../utils/makeId";
 
 export default function HomePage() {
   const { todos, toggleTodo, deleteTodo, clearCompleted, addTodo, updateTodo } =
