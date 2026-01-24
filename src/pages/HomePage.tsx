@@ -1,13 +1,12 @@
-//src/pages/HomePage.tsx
+// src/pages/HomePage.tsx
 import { Box, Container, Paper } from "@mui/material";
 import { useMemo, useState } from "react";
 import { useDebounce } from "../hooks/useDebounce";
 import TodoList from "../components/todos/TodoList";
 import TodoToolbar from "../components/todos/TodoToolbar";
 import { useTodos } from "../context/todos/TodosContext";
-import TodoDialog, { type TodoFormValues } from "../components/todos/TodoDialog";
-import { TODO_SUBJECTS, getTodayISODate } from "../constants/todos";
-import { makeId } from "../utils/makeId";
+import TodoDialog from "../components/todos/TodoDialog";
+import { useTodoDialogController } from "../hooks/useTodoDialogController";
 
 export default function HomePage() {
   const { todos, toggleTodo, deleteTodo, clearCompleted, addTodo, updateTodo } =
@@ -17,9 +16,7 @@ export default function HomePage() {
   const [hideDone, setHideDone] = useState(false);
   const debouncedSearch = useDebounce(search, 300);
 
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogMode, setDialogMode] = useState<"add" | "edit">("add");
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const dialog = useTodoDialogController({ todos, addTodo, updateTodo });
 
   const completedCount = todos.filter((t) => t.completed).length;
   const normalizedSearch = debouncedSearch.trim().toLowerCase();
@@ -30,55 +27,6 @@ export default function HomePage() {
       .filter((t) => (hideDone ? !t.completed : true));
   }, [todos, normalizedSearch, hideDone]);
 
-  const editingTodo = editingId
-    ? todos.find((t) => t.id === editingId)
-    : undefined;
-
-  const openAdd = () => {
-    setDialogMode("add");
-    setEditingId(null);
-    setDialogOpen(true);
-  };
-
-  const openEdit = (id: string) => {
-    setDialogMode("edit");
-    setEditingId(id);
-    setDialogOpen(true);
-  };
-
-  const closeDialog = () => setDialogOpen(false);
-
-  const initialValues: TodoFormValues =
-    dialogMode === "edit" && editingTodo
-      ? {
-          name: editingTodo.name,
-          subject: editingTodo.subject,
-          priority: editingTodo.priority,
-          date: editingTodo.date,
-        }
-      : {
-          name: "",
-          subject: TODO_SUBJECTS[0],
-          priority: 5,
-          date: getTodayISODate(),
-        };
-
-  const handleSubmit = (values: TodoFormValues) => {
-    if (dialogMode === "add") {
-      addTodo({
-        id: makeId(),
-        completed: false,
-        ...values,
-      });
-    } else if (dialogMode === "edit" && editingTodo) {
-      updateTodo({
-        ...editingTodo,
-        ...values,
-      });
-    }
-    setDialogOpen(false);
-  };
-
   return (
     <Container maxWidth="sm" sx={{ py: 3 }}>
       <TodoToolbar
@@ -88,7 +36,7 @@ export default function HomePage() {
         onHideDoneChange={setHideDone}
         completedCount={completedCount}
         onClearCompleted={clearCompleted}
-        onAddClick={openAdd}
+        onAddClick={dialog.openAdd}
       />
 
       <Paper sx={{ mt: 2 }}>
@@ -97,17 +45,17 @@ export default function HomePage() {
             todos={visibleTodos}
             onToggle={toggleTodo}
             onDelete={deleteTodo}
-            onEdit={openEdit}
+            onEdit={dialog.openEdit}
           />
         </Box>
       </Paper>
 
       <TodoDialog
-        open={dialogOpen}
-        mode={dialogMode}
-        initialValues={initialValues}
-        onClose={closeDialog}
-        onSubmit={handleSubmit}
+        open={dialog.dialogOpen}
+        mode={dialog.dialogMode}
+        initialValues={dialog.initialValues}
+        onClose={dialog.closeDialog}
+        onSubmit={dialog.handleSubmit}
       />
     </Container>
   );
