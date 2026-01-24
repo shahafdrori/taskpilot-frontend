@@ -1,73 +1,58 @@
-# React + TypeScript + Vite
+# TaskPilot (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+TaskPilot is a React + TypeScript + MUI todo app built as part of a development onboarding exercise.
+It includes a Home view for day-to-day usage and an Admin view with a sortable/filterable table.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Home
+- Add todo via Dialog (name, subject, priority 1-10, date)
+- Edit existing todo (same dialog, prefilled values)
+- Toggle completed/uncompleted
+- Delete todo
+- Search by name (debounced)
+- Hide done todos
+- Clear done todos
 
-## React Compiler
+Admin
+- Table view (TanStack Table)
+- Sorting
+- Search filter (debounced)
+- Add / edit / delete actions from table
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Navigation
+- React Router tabs (Home / Admin)
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- React + TypeScript (Vite)
+- MUI (Material UI)
+- React Router
+- TanStack Table
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Getting Started
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+```bash
+npm install
+npm run dev
+````
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Scripts
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+* `npm run dev` - start dev server
+* `npm run build` - production build
+* `npm run lint` - eslint
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Project Structure (high level)
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+* `src/pages` - route pages (HomePage, AdminPage)
+* `src/components` - UI components (dialog, list, toolbar, header)
+* `src/context` - Todos context + reducer
+* `src/hooks` - reusable hooks (useDebounce)
+* `src/constants` - app constants (subjects, priorities)
+* `src/utils` - small utilities (makeId)
+
+## Notes / Roadmap
+
+* Current state is in-memory via Context + Reducer (mock data).
+* Next step: connect to backend (planned separate repo) for persistence.
