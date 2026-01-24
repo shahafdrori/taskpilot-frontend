@@ -1,4 +1,4 @@
-//src/pages/AdminPage.tsx
+// src/pages/AdminPage.tsx
 import {
   Box,
   Button,
@@ -31,10 +31,9 @@ import {
 import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import { useTodos } from "../context/todos/TodosContext";
 import type { Todo } from "../types/todo";
-import TodoDialog, { type TodoFormValues } from "../components/todos/TodoDialog";
-import { TODO_SUBJECTS, getTodayISODate } from "../constants/todos";
+import TodoDialog from "../components/todos/TodoDialog";
 import { useDebounce } from "../hooks/useDebounce";
-import { makeId } from "../utils/makeId";
+import { useTodoDialogController } from "../hooks/useTodoDialogController";
 
 export default function AdminPage() {
   const { todos, toggleTodo, deleteTodo, addTodo, updateTodo } = useTodos();
@@ -43,58 +42,7 @@ export default function AdminPage() {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 300);
 
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogMode, setDialogMode] = useState<"add" | "edit">("add");
-  const [editingId, setEditingId] = useState<string | null>(null);
-
-  const editingTodo = editingId
-    ? todos.find((t) => t.id === editingId)
-    : undefined;
-
-  const openAdd = () => {
-    setDialogMode("add");
-    setEditingId(null);
-    setDialogOpen(true);
-  };
-
-  const openEdit = (id: string) => {
-    setDialogMode("edit");
-    setEditingId(id);
-    setDialogOpen(true);
-  };
-
-  const closeDialog = () => setDialogOpen(false);
-
-  const initialValues: TodoFormValues =
-    dialogMode === "edit" && editingTodo
-      ? {
-          name: editingTodo.name,
-          subject: editingTodo.subject,
-          priority: editingTodo.priority,
-          date: editingTodo.date,
-        }
-      : {
-          name: "",
-          subject: TODO_SUBJECTS[0],
-          priority: 5,
-          date: getTodayISODate(),
-        };
-
-  const handleSubmit = (values: TodoFormValues) => {
-    if (dialogMode === "add") {
-      addTodo({
-        id: makeId(),
-        completed: false,
-        ...values,
-      });
-    } else if (dialogMode === "edit" && editingTodo) {
-      updateTodo({
-        ...editingTodo,
-        ...values,
-      });
-    }
-    setDialogOpen(false);
-  };
+  const dialog = useTodoDialogController({ todos, addTodo, updateTodo });
 
   const columns = useMemo<ColumnDef<Todo>[]>(
     () => [
@@ -134,7 +82,10 @@ export default function AdminPage() {
         header: "Actions",
         cell: ({ row }) => (
           <Stack direction="row" spacing={0.5}>
-            <IconButton aria-label="edit" onClick={() => openEdit(row.original.id)}>
+            <IconButton
+              aria-label="edit"
+              onClick={() => dialog.openEdit(row.original.id)}
+            >
               <EditIcon />
             </IconButton>
             <IconButton
@@ -148,7 +99,7 @@ export default function AdminPage() {
         enableSorting: false,
       },
     ],
-    [deleteTodo, toggleTodo]
+    [deleteTodo, toggleTodo, dialog.openEdit]
   );
 
   const table = useReactTable({
@@ -187,7 +138,11 @@ export default function AdminPage() {
             sx={{ flex: 1, minWidth: 260 }}
           />
 
-          <Button variant="contained" startIcon={<AddIcon />} onClick={openAdd}>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={dialog.openAdd}
+          >
             Add todo
           </Button>
         </Stack>
@@ -200,8 +155,7 @@ export default function AdminPage() {
                   {hg.headers.map((header) => {
                     const canSort = header.column.getCanSort();
                     const sorted = header.column.getIsSorted();
-                    const direction =
-                      sorted === "desc" ? "desc" : "asc";
+                    const direction = sorted === "desc" ? "desc" : "asc";
 
                     return (
                       <TableCell key={header.id}>
@@ -257,11 +211,11 @@ export default function AdminPage() {
       </Paper>
 
       <TodoDialog
-        open={dialogOpen}
-        mode={dialogMode}
-        initialValues={initialValues}
-        onClose={closeDialog}
-        onSubmit={handleSubmit}
+        open={dialog.dialogOpen}
+        mode={dialog.dialogMode}
+        initialValues={dialog.initialValues}
+        onClose={dialog.closeDialog}
+        onSubmit={dialog.handleSubmit}
       />
     </Container>
   );
