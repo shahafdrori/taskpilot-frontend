@@ -1,5 +1,5 @@
 // src/pages/HomePage.tsx
-import { Box, Container, Paper } from "@mui/material";
+import { Box, Container, Paper, Stack } from "@mui/material";
 import { useMemo, useState } from "react";
 import { useDebounce } from "../hooks/useDebounce";
 import TodoList from "../components/todos/TodoList";
@@ -7,6 +7,7 @@ import TodoToolbar from "../components/todos/TodoToolbar";
 import { useTodos } from "../context/todos/TodosContext";
 import TodoDialog from "../components/todos/TodoDialog";
 import { useTodoDialogController } from "../hooks/useTodoDialogController";
+import TodoMap from "../components/map/TodoMap";
 
 export default function HomePage() {
   const { todos, toggleTodo, deleteTodo, clearCompleted, addTodo, updateTodo } =
@@ -28,27 +29,33 @@ export default function HomePage() {
   }, [todos, normalizedSearch, hideDone]);
 
   return (
-    <Container maxWidth="sm" sx={{ py: 3 }}>
-      <TodoToolbar
-        search={search}
-        onSearchChange={setSearch}
-        hideDone={hideDone}
-        onHideDoneChange={setHideDone}
-        completedCount={completedCount}
-        onClearCompleted={clearCompleted}
-        onAddClick={dialog.openAdd}
-      />
+    <Container maxWidth="md" sx={{ py: 3 }}>
+      <Stack spacing={2}>
+        <TodoToolbar
+          search={search}
+          onSearchChange={setSearch}
+          hideDone={hideDone}
+          onHideDoneChange={setHideDone}
+          completedCount={completedCount}
+          onClearCompleted={clearCompleted}
+          onAddClick={dialog.openAdd}
+        />
 
-      <Paper sx={{ mt: 2 }}>
-        <Box sx={{ p: 1 }}>
-          <TodoList
-            todos={visibleTodos}
-            onToggle={toggleTodo}
-            onDelete={deleteTodo}
-            onEdit={dialog.openEdit}
-          />
-        </Box>
-      </Paper>
+        <Paper sx={{ p: 1 }}>
+          <TodoMap />
+        </Paper>
+
+        <Paper>
+          <Box sx={{ p: 1 }}>
+            <TodoList
+              todos={visibleTodos}
+              onToggle={toggleTodo}
+              onDelete={deleteTodo}
+              onEdit={dialog.openEdit}
+            />
+          </Box>
+        </Paper>
+      </Stack>
 
       <TodoDialog
         open={dialog.dialogOpen}
