@@ -10,6 +10,7 @@ export const MOCK_TODOS: Todo[] = [
     priority: 5,
     date: getTodayISODate(),
     completed: false,
+    location: [34.7818, 32.0853],
   },
   {
     id: "2",
@@ -18,6 +19,7 @@ export const MOCK_TODOS: Todo[] = [
     priority: 3,
     date: getTodayISODate(),
     completed: true,
+    location: [35.2137, 31.7683],
   },
   {
     id: "3",
@@ -26,6 +28,6 @@ export const MOCK_TODOS: Todo[] = [
     priority: 6,
     date: getTodayISODate(),
     completed: false,
+    location: [34.9896, 32.794],
   },
 ];
-

@@ -42,7 +42,7 @@ export default function HomePage() {
         />
 
         <Paper sx={{ p: 1 }}>
-          <TodoMap />
+          <TodoMap todos={visibleTodos} />
         </Paper>
 
         <Paper>
