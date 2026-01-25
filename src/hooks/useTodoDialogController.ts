@@ -1,11 +1,14 @@
 //src/hooks/useTodoDialogController.ts
 import { useCallback, useMemo, useState } from "react";
-import type { Todo } from "../types/todo";
+import type { Todo, LonLat } from "../types/todo";
 import type { TodoFormValues } from "../components/todos/TodoDialog";
 import { TODO_SUBJECTS, getTodayISODate } from "../constants/todos";
 import { makeId } from "../utils/makeId";
 
 type Mode = "add" | "edit";
+
+// Temporary default location until Step 3 (dialog map picker) is implemented.
+const DEFAULT_LOCATION: LonLat = [34.8, 31.9]; // [lon, lat] (Israel-ish)
 
 export function useTodoDialogController(params: {
   todos: Todo[];
@@ -57,8 +60,14 @@ export function useTodoDialogController(params: {
   const handleSubmit = useCallback(
     (values: TodoFormValues) => {
       if (dialogMode === "add") {
-        addTodo({ id: makeId(), completed: false, ...values });
+        addTodo({
+          id: makeId(),
+          completed: false,
+          location: DEFAULT_LOCATION,
+          ...values,
+        });
       } else if (dialogMode === "edit" && editingTodo) {
+        // values doesn't contain location yet, so editingTodo.location will stay as-is
         updateTodo({ ...editingTodo, ...values });
       }
       setDialogOpen(false);
