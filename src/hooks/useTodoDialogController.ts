@@ -7,9 +7,6 @@ import { makeId } from "../utils/makeId";
 
 type Mode = "add" | "edit";
 
-// Temporary default location until Step 3 (dialog map picker) is implemented.
-const DEFAULT_LOCATION: LonLat = [34.8, 31.9]; // [lon, lat] (Israel-ish)
-
 export function useTodoDialogController(params: {
   todos: Todo[];
   addTodo: (todo: Todo) => void;
@@ -47,6 +44,7 @@ export function useTodoDialogController(params: {
         subject: editingTodo.subject,
         priority: editingTodo.priority,
         date: editingTodo.date,
+        location: editingTodo.location,
       };
     }
     return {
@@ -54,21 +52,20 @@ export function useTodoDialogController(params: {
       subject: TODO_SUBJECTS[0],
       priority: 5,
       date: getTodayISODate(),
+      location: null,
     };
   }, [dialogMode, editingTodo]);
 
   const handleSubmit = useCallback(
     (values: TodoFormValues) => {
+      if (!values.location) return;
+
+      const location: LonLat = values.location;
+
       if (dialogMode === "add") {
-        addTodo({
-          id: makeId(),
-          completed: false,
-          location: DEFAULT_LOCATION,
-          ...values,
-        });
+        addTodo({ id: makeId(), completed: false, ...values, location });
       } else if (dialogMode === "edit" && editingTodo) {
-        // values doesn't contain location yet, so editingTodo.location will stay as-is
-        updateTodo({ ...editingTodo, ...values });
+        updateTodo({ ...editingTodo, ...values, location });
       }
       setDialogOpen(false);
     },

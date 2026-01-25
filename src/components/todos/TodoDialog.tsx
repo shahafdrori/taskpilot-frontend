@@ -9,14 +9,23 @@ import {
   MenuItem,
   Stack,
   TextField,
+  Typography,
 } from "@mui/material";
-import { TODO_PRIORITIES, TODO_SUBJECTS, type TodoSubject, getTodayISODate } from "../../constants/todos";
+import {
+  TODO_PRIORITIES,
+  TODO_SUBJECTS,
+  type TodoSubject,
+  getTodayISODate,
+} from "../../constants/todos";
+import type { LonLat } from "../../types/todo";
+import MapPicker from "../map/MapPicker";
 
 export type TodoFormValues = {
   name: string;
   subject: TodoSubject;
   priority: number;
   date: string;
+  location: LonLat | null;
 };
 
 type Props = {
@@ -32,7 +41,12 @@ const defaultValues: TodoFormValues = {
   subject: TODO_SUBJECTS[0],
   priority: 5,
   date: getTodayISODate(),
+  location: null,
 };
+
+function formatCoord(n: number) {
+  return Number.isFinite(n) ? n.toFixed(5) : "";
+}
 
 export default function TodoDialog({
   open,
@@ -47,6 +61,7 @@ export default function TodoDialog({
   const [subject, setSubject] = React.useState<TodoSubject>(values.subject);
   const [priority, setPriority] = React.useState<number>(values.priority);
   const [date, setDate] = React.useState(values.date);
+  const [location, setLocation] = React.useState<LonLat | null>(values.location);
 
   React.useEffect(() => {
     if (!open) return;
@@ -54,9 +69,17 @@ export default function TodoDialog({
     setSubject(values.subject);
     setPriority(values.priority);
     setDate(values.date);
-  }, [open, values.name, values.subject, values.priority, values.date]);
+    setLocation(values.location);
+  }, [
+    open,
+    values.name,
+    values.subject,
+    values.priority,
+    values.date,
+    values.location,
+  ]);
 
-  const canSave = name.trim().length > 0;
+  const canSave = name.trim().length > 0 && location !== null;
 
   const handleSave = () => {
     if (!canSave) return;
@@ -65,8 +88,12 @@ export default function TodoDialog({
       subject,
       priority,
       date,
+      location,
     });
   };
+
+  const lon = location?.[0];
+  const lat = location?.[1];
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
@@ -115,6 +142,29 @@ export default function TodoDialog({
             onChange={(e) => setDate(e.target.value)}
             InputLabelProps={{ shrink: true }}
           />
+
+          <Stack spacing={1}>
+            <Typography variant="subtitle2">
+              Location (click on the map)
+            </Typography>
+            <MapPicker value={location} onChange={setLocation} />
+            <Stack direction="row" spacing={1}>
+              <TextField
+                size="small"
+                label="Lon"
+                value={lon === undefined ? "" : formatCoord(lon)}
+                InputProps={{ readOnly: true }}
+                fullWidth
+              />
+              <TextField
+                size="small"
+                label="Lat"
+                value={lat === undefined ? "" : formatCoord(lat)}
+                InputProps={{ readOnly: true }}
+                fullWidth
+              />
+            </Stack>
+          </Stack>
         </Stack>
       </DialogContent>
 
