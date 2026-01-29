@@ -15,6 +15,9 @@ import Icon from "ol/style/Icon";
 import Overlay from "ol/Overlay";
 import type { Todo } from "../../types/todo";
 import { placePinDataUri } from "./markerIcon";
+import { unByKey } from "ol/Observable";
+import type { EventsKey } from "ol/events";
+
 
 type Props = {
   todos?: Todo[];
@@ -87,8 +90,9 @@ export default function TodoMap({ todos = [], height = 320 }: Props) {
       }),
     });
 
-    let pointerMoveHandler: ((evt: any) => void) | null = null;
-    let mouseOutHandler: (() => void) | null = null;
+    let pointerMoveKey: EventsKey | undefined;
+    let mouseOutHandler: (() => void) | undefined;
+
 
     if (tooltipElRef.current) {
       const overlay = new Overlay({
@@ -107,7 +111,7 @@ export default function TodoMap({ todos = [], height = 320 }: Props) {
         map.getTargetElement().style.cursor = "";
       };
 
-      pointerMoveHandler = (evt) => {
+      pointerMoveKey = map.on("pointermove", (evt) => {
         if (evt.dragging) {
           hideTooltip();
           return;
@@ -137,9 +141,7 @@ export default function TodoMap({ todos = [], height = 320 }: Props) {
 
         el.classList.add("is-visible");
         map.getTargetElement().style.cursor = "pointer";
-      };
-
-      map.on("pointermove", pointerMoveHandler);
+      });
 
       mouseOutHandler = () => hideTooltip();
       map.getTargetElement().addEventListener("mouseout", mouseOutHandler);
@@ -148,7 +150,7 @@ export default function TodoMap({ todos = [], height = 320 }: Props) {
     mapRef.current = map;
 
     return () => {
-      if (pointerMoveHandler) map.un("pointermove", pointerMoveHandler);
+      if (pointerMoveKey) unByKey(pointerMoveKey);
       if (mouseOutHandler) {
         map.getTargetElement().removeEventListener("mouseout", mouseOutHandler);
       }
