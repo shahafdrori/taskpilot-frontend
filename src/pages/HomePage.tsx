@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useDebounce } from "../hooks/useDebounce";
 import TodoList from "../components/todos/TodoList";
 import TodoToolbar from "../components/todos/TodoToolbar";
-import { useTodos } from "../context/todos/TodosContext";
+import { useTodos } from "../context/todos/useTodos";
 import TodoDialog from "../components/todos/TodoDialog";
 import { useTodoDialogController } from "../hooks/useTodoDialogController";
 import TodoMap from "../components/map/TodoMap";
@@ -37,7 +37,7 @@ export default function HomePage() {
           hideDone={hideDone}
           onHideDoneChange={setHideDone}
           completedCount={completedCount}
-          onClearCompleted={clearCompleted}
+          onClearCompleted={() => void clearCompleted()}
           onAddClick={dialog.openAdd}
         />
 
@@ -49,8 +49,8 @@ export default function HomePage() {
           <Box sx={{ p: 1 }}>
             <TodoList
               todos={visibleTodos}
-              onToggle={toggleTodo}
-              onDelete={deleteTodo}
+              onToggle={(id) => void toggleTodo(id)}
+              onDelete={(id) => void deleteTodo(id)}
               onEdit={dialog.openEdit}
             />
           </Box>

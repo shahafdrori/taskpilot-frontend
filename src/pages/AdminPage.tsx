@@ -29,7 +29,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import type { ColumnDef, SortingState } from "@tanstack/react-table";
-import { useTodos } from "../context/todos/TodosContext";
+import { useTodos } from "../context/todos/useTodos";
 import type { Todo } from "../types/todo";
 import TodoDialog from "../components/todos/TodoDialog";
 import { useDebounce } from "../hooks/useDebounce";
@@ -43,6 +43,7 @@ export default function AdminPage() {
   const debouncedSearch = useDebounce(search, 300);
 
   const dialog = useTodoDialogController({ todos, addTodo, updateTodo });
+  const { openAdd, openEdit } = dialog;
 
   const columns = useMemo<ColumnDef<Todo>[]>(
     () => [
@@ -72,7 +73,7 @@ export default function AdminPage() {
         cell: ({ row }) => (
           <Checkbox
             checked={row.original.completed}
-            onChange={() => toggleTodo(row.original.id)}
+            onChange={() => void toggleTodo(row.original.id)}
           />
         ),
         enableSorting: true,
@@ -84,13 +85,13 @@ export default function AdminPage() {
           <Stack direction="row" spacing={0.5}>
             <IconButton
               aria-label="edit"
-              onClick={() => dialog.openEdit(row.original.id)}
+              onClick={() => openEdit(row.original.id)}
             >
               <EditIcon />
             </IconButton>
             <IconButton
               aria-label="delete"
-              onClick={() => deleteTodo(row.original.id)}
+              onClick={() => void deleteTodo(row.original.id)}
             >
               <DeleteIcon />
             </IconButton>
@@ -99,9 +100,10 @@ export default function AdminPage() {
         enableSorting: false,
       },
     ],
-    [deleteTodo, toggleTodo, dialog.openEdit]
+    [deleteTodo, toggleTodo, openEdit]
   );
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: todos,
     columns,
@@ -141,7 +143,7 @@ export default function AdminPage() {
           <Button
             variant="contained"
             startIcon={<AddIcon />}
-            onClick={dialog.openAdd}
+            onClick={openAdd}
           >
             Add todo
           </Button>

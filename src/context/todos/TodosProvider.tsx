@@ -1,10 +1,11 @@
-//src/context/todos/TodosContext.tsx
-import React, { createContext, useContext, useReducer } from "react";
+// src/context/todos/TodosProvider.tsx
+import React, { useCallback, useEffect, useMemo, useReducer } from "react";
 import type { Todo } from "../../types/todo";
-import { MOCK_TODOS } from "../../data/mockTodos";
+import { tasksApi } from "../../api/tasksApi";
+import { TodosContext, type TodosContextValue } from "./todosContext";
 
 type Action =
-  | { type: "toggle"; id: string }
+  | { type: "setAll"; todos: Todo[] }
   | { type: "delete"; id: string }
   | { type: "clearCompleted" }
   | { type: "add"; todo: Todo }
@@ -12,51 +13,83 @@ type Action =
 
 function todosReducer(state: Todo[], action: Action): Todo[] {
   switch (action.type) {
-    case "toggle":
-      return state.map((t) =>
-        t.id === action.id ? { ...t, completed: !t.completed } : t
-      );
+    case "setAll":
+      return action.todos;
+
     case "delete":
       return state.filter((t) => t.id !== action.id);
+
     case "clearCompleted":
       return state.filter((t) => !t.completed);
+
     case "add":
       return [action.todo, ...state];
+
     case "update":
       return state.map((t) => (t.id === action.todo.id ? action.todo : t));
+
     default:
       return state;
   }
 }
 
-type TodosContextValue = {
-  todos: Todo[];
-  toggleTodo: (id: string) => void;
-  deleteTodo: (id: string) => void;
-  clearCompleted: () => void;
-  addTodo: (todo: Todo) => void;
-  updateTodo: (todo: Todo) => void;
-};
-
-const TodosContext = createContext<TodosContextValue | undefined>(undefined);
-
 export function TodosProvider({ children }: { children: React.ReactNode }) {
-  const [todos, dispatch] = useReducer(todosReducer, MOCK_TODOS);
+  const [todos, dispatch] = useReducer(todosReducer, []);
 
-  const value: TodosContextValue = {
-    todos,
-    toggleTodo: (id) => dispatch({ type: "toggle", id }),
-    deleteTodo: (id) => dispatch({ type: "delete", id }),
-    clearCompleted: () => dispatch({ type: "clearCompleted" }),
-    addTodo: (todo) => dispatch({ type: "add", todo }),
-    updateTodo: (todo) => dispatch({ type: "update", todo }),
-  };
+  const reloadTodos = useCallback(async () => {
+    const data = await tasksApi.list();
+    dispatch({ type: "setAll", todos: data });
+  }, []);
+
+  useEffect(() => {
+    void reloadTodos();
+  }, [reloadTodos]);
+
+  const addTodo = useCallback(async (input: Omit<Todo, "id">) => {
+    const created = await tasksApi.create(input);
+    dispatch({ type: "add", todo: created });
+  }, []);
+
+  const updateTodo = useCallback(async (todo: Todo) => {
+    const { id, ...payload } = todo;
+    const updated = await tasksApi.replace(id, payload);
+    dispatch({ type: "update", todo: updated });
+  }, []);
+
+  const toggleTodo = useCallback(
+    async (id: string) => {
+      const current = todos.find((t) => t.id === id);
+      if (!current) return;
+
+      const updated = await tasksApi.patch(id, { completed: !current.completed });
+      dispatch({ type: "update", todo: updated });
+    },
+    [todos]
+  );
+
+  const deleteTodo = useCallback(async (id: string) => {
+    await tasksApi.remove(id);
+    dispatch({ type: "delete", id });
+  }, []);
+
+  const clearCompleted = useCallback(async () => {
+    const completed = todos.filter((t) => t.completed);
+    await Promise.all(completed.map((t) => tasksApi.remove(t.id)));
+    dispatch({ type: "clearCompleted" });
+  }, [todos]);
+
+  const value: TodosContextValue = useMemo(
+    () => ({
+      todos,
+      toggleTodo,
+      deleteTodo,
+      clearCompleted,
+      addTodo,
+      updateTodo,
+      reloadTodos,
+    }),
+    [todos, toggleTodo, deleteTodo, clearCompleted, addTodo, updateTodo, reloadTodos]
+  );
 
   return <TodosContext.Provider value={value}>{children}</TodosContext.Provider>;
-}
-
-export function useTodos() {
-  const ctx = useContext(TodosContext);
-  if (!ctx) throw new Error("useTodos must be used inside TodosProvider");
-  return ctx;
 }
