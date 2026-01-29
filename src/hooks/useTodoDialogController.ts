@@ -3,14 +3,13 @@ import { useCallback, useMemo, useState } from "react";
 import type { Todo, LonLat } from "../types/todo";
 import type { TodoFormValues } from "../components/todos/TodoDialog";
 import { TODO_SUBJECTS, getTodayISODate } from "../constants/todos";
-import { makeId } from "../utils/makeId";
 
 type Mode = "add" | "edit";
 
 export function useTodoDialogController(params: {
   todos: Todo[];
-  addTodo: (todo: Todo) => void;
-  updateTodo: (todo: Todo) => void;
+  addTodo: (todo: Omit<Todo, "id">) => Promise<void>;
+  updateTodo: (todo: Todo) => Promise<void>;
 }) {
   const { todos, addTodo, updateTodo } = params;
 
@@ -58,16 +57,38 @@ export function useTodoDialogController(params: {
 
   const handleSubmit = useCallback(
     (values: TodoFormValues) => {
-      if (!values.location) return;
+      void (async () => {
+        if (!values.location) return;
 
-      const location: LonLat = values.location;
+        const location: LonLat = values.location;
 
-      if (dialogMode === "add") {
-        addTodo({ id: makeId(), completed: false, ...values, location });
-      } else if (dialogMode === "edit" && editingTodo) {
-        updateTodo({ ...editingTodo, ...values, location });
-      }
-      setDialogOpen(false);
+        try {
+          if (dialogMode === "add") {
+            await addTodo({
+              name: values.name.trim(),
+              subject: values.subject,
+              priority: values.priority,
+              date: values.date,
+              completed: false,
+              location,
+            });
+          } else if (dialogMode === "edit" && editingTodo) {
+            await updateTodo({
+              ...editingTodo,
+              name: values.name.trim(),
+              subject: values.subject,
+              priority: values.priority,
+              date: values.date,
+              location,
+            });
+          }
+
+          setDialogOpen(false);
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : "Failed to save";
+          window.alert(msg);
+        }
+      })();
     },
     [addTodo, updateTodo, dialogMode, editingTodo]
   );

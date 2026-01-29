@@ -5,7 +5,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./index.css";
 import "ol/ol.css";
-import { TodosProvider } from "./context/todos/TodosContext";
+import { TodosProvider } from "./context/todos/TodosProvider";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
