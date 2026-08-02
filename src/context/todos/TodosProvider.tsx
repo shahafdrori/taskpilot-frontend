@@ -1,5 +1,5 @@
-// src/context/todos/TodosProvider.tsx
 import React, { useCallback, useEffect, useMemo, useReducer } from "react";
+
 import type { Todo } from "../../types/todo";
 import { tasksApi } from "../../api/tasksApi";
 import { TodosContext, type TodosContextValue } from "./todosContext";
@@ -13,7 +13,7 @@ type Action =
 
 function todosReducer(state: Todo[], action: Action): Todo[] {
   switch (action.type) {
-    case "setAll":
+    case "setAll": // rename setAll to more indicative name
       return action.todos;
 
     case "delete":
@@ -25,7 +25,7 @@ function todosReducer(state: Todo[], action: Action): Todo[] {
     case "add":
       return [action.todo, ...state];
 
-    case "update":
+    case "update": // rename t in whole file t-> todo maybe
       return state.map((t) => (t.id === action.todo.id ? action.todo : t));
 
     default:

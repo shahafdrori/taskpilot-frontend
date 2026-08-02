@@ -1,4 +1,3 @@
-//src/components/todos/TodoItem.tsx
 import {
   Checkbox,
   IconButton,
@@ -9,15 +8,17 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+
 import type { Todo } from "../../types/todo";
 
-type Props = {
+type Props = { // rename props in whole code
   todo: Todo;
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
 };
 
+// arrow func in whole code
 export default function TodoItem({ todo, onToggle, onDelete, onEdit }: Props) {
   const secondary = `${todo.subject} · Priority ${todo.priority} · ${todo.date}`;
 

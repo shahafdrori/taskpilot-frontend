@@ -1,4 +1,3 @@
-//src/components/todos/TodoList.tsx
 import React from "react";
 import { Divider, List } from "@mui/material";
 import type { Todo } from "../../types/todo";
@@ -12,6 +11,8 @@ type Props = {
 };
 
 export default function TodoList({ todos, onToggle, onDelete, onEdit }: Props) {
+  // make it implicit return, also check what it is
+  // dont use react.fragment use box or stack as needed
   return (
     <List disablePadding>
       {todos.map((todo, idx) => (

@@ -1,4 +1,3 @@
-//src/data/mockTodos.ts
 import type { Todo } from "../types/todo";
 import { getTodayISODate } from "../constants/todos";
 

@@ -1,6 +1,6 @@
-//src/context/todos/todosContext.ts
 import { createContext } from "react";
 import type { Todo } from "../../types/todo";
+// no need for file todos inside context, extrect to context or rename it, its not indicative name
 
 export type TodosContextValue = {
   todos: Todo[];

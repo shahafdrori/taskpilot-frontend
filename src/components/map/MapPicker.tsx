@@ -1,4 +1,3 @@
-//src/components/map/MapPicker.tsx
 import { Box } from "@mui/material";
 import { useEffect, useMemo, useRef } from "react";
 import Map from "ol/Map";
@@ -14,9 +13,10 @@ import { Style } from "ol/style";
 import CircleStyle from "ol/style/Circle";
 import Fill from "ol/style/Fill";
 import Stroke from "ol/style/Stroke";
+
 import type { LonLat } from "../../types/todo";
 
-type Props = {
+type Props = { // rename to mapPickerProps
   value: LonLat | null;
   onChange: (next: LonLat) => void;
   height?: number;
@@ -30,6 +30,7 @@ const pickerStyle = new Style({
   }),
 });
 
+// study what useRef does and why use it for a map
 export default function MapPicker({ value, onChange, height = 220 }: Props) {
   const mapElRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<Map | null>(null);
@@ -37,6 +38,7 @@ export default function MapPicker({ value, onChange, height = 220 }: Props) {
 
   const feature = useMemo(() => {
     if (!value) return null;
+
     return new Feature({
       geometry: new Point(fromLonLat(value)),
     });
@@ -90,6 +92,7 @@ export default function MapPicker({ value, onChange, height = 220 }: Props) {
     map.getView().setCenter(fromLonLat(value));
   }, [value]);
 
+  // try using width: 1 instead of "100%" in the whole code
   return (
     <Box sx={{ width: "100%", height, borderRadius: 1, overflow: "hidden" }}>
       <div ref={mapElRef} style={{ width: "100%", height: "100%" }} />

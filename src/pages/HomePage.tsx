@@ -1,6 +1,6 @@
-// src/pages/HomePage.tsx
 import { Box, Container, Paper, Stack } from "@mui/material";
 import { useMemo, useState } from "react";
+//important that you keep a line between system imports and your imports
 import { useDebounce } from "../hooks/useDebounce";
 import TodoList from "../components/todos/TodoList";
 import TodoToolbar from "../components/todos/TodoToolbar";
@@ -24,7 +24,7 @@ export default function HomePage() {
 
   const visibleTodos = useMemo(() => {
     return todos
-      .filter((t) => t.name.toLowerCase().includes(normalizedSearch))
+      .filter((t) => t.name.toLowerCase().includes(normalizedSearch)) // rename t
       .filter((t) => (hideDone ? !t.completed : true));
   }, [todos, normalizedSearch, hideDone]);
 

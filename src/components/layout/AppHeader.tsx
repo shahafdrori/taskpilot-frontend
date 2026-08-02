@@ -1,4 +1,3 @@
-//src/components/layout/AppHeader.tsx
 import { AppBar, Tab, Tabs, Toolbar, Typography } from "@mui/material";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 
@@ -14,10 +13,11 @@ function getActiveTab(pathname: string) {
   return idx === -1 ? 0 : idx;
 }
 
-export default function AppHeader() {
+const AppHeader = () => {
   const location = useLocation();
   const active = getActiveTab(location.pathname);
 
+  // dont use static position
   return (
     <AppBar position="static">
       <Toolbar>
@@ -29,8 +29,8 @@ export default function AppHeader() {
           indicatorColor="secondary"
           sx={{ ml: 2 }}
         >
-          {routes.map((r) => (
-            <Tab key={r.to} label={r.label} component={RouterLink} to={r.to} />
+          {routes.map((route) => (
+            <Tab key={route.to} label={route.label} component={RouterLink} to={route.to} />
           ))}
         </Tabs>
       </Toolbar>
@@ -38,3 +38,4 @@ export default function AppHeader() {
   );
 }
 
+export default AppHeader

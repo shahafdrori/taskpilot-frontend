@@ -1,4 +1,3 @@
-//src/hooks/useTodoDialogController.ts
 import { useCallback, useMemo, useState } from "react";
 import type { Todo, LonLat } from "../types/todo";
 import type { TodoFormValues } from "../components/todos/TodoDialog";
@@ -18,7 +17,7 @@ export function useTodoDialogController(params: {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const editingTodo = useMemo(
-    () => (editingId ? todos.find((t) => t.id === editingId) : undefined),
+    () => (editingId ? todos.find((todo) => todo.id === editingId) : undefined),
     [editingId, todos]
   );
 
@@ -46,6 +45,7 @@ export function useTodoDialogController(params: {
         location: editingTodo.location,
       };
     }
+    
     return {
       name: "",
       subject: TODO_SUBJECTS[0],

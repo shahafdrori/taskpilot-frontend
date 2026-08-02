@@ -1,9 +1,8 @@
-//src/types/todo.ts
 import type { TodoSubject } from "../constants/todos";
 
-export type LonLat = [number, number]; // [lon, lat]
+export type LonLat = [number, number];
 
-export type Todo = {
+export type Todo = { // delete comment after remembering the format
   id: string;
   name: string;
   subject: TodoSubject;

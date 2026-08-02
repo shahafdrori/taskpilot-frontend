@@ -1,4 +1,3 @@
-//src/components/map/TodoMap.tsx
 import { Box } from "@mui/material";
 import { useEffect, useMemo, useRef } from "react";
 import OlMap from "ol/Map";
@@ -14,19 +13,19 @@ import { Style } from "ol/style";
 import Icon from "ol/style/Icon";
 import Overlay from "ol/Overlay";
 import type { Todo } from "../../types/todo";
-import { placePinDataUri } from "./markerIcon";
+import { placePinDataUri } from "../../assets/markerIcon";
 import { unByKey } from "ol/Observable";
 import type { EventsKey } from "ol/events";
 
 
-type Props = {
+type Props = { // rename to TodoMapProps
   todos?: Todo[];
   height?: number;
 };
 
 const STYLE_CACHE = new Map<string, Style>();
 
-function getMarkerStyle(completed: boolean) {
+function getMarkerStyle(completed: boolean) { // delete this comment green red
   const fill = completed ? "#2e7d32" : "#d32f2f"; // green / red
   const cached = STYLE_CACHE.get(fill);
   if (cached) return cached;
@@ -54,15 +53,16 @@ export default function TodoMap({ todos = [], height = 320 }: Props) {
   const tooltipOverlayRef = useRef<Overlay | null>(null);
 
   const features = useMemo(() => {
-    return todos.map((t) => {
-      const f = new Feature({
-        geometry: new Point(fromLonLat(t.location)),
-        name: t.name,
-        completed: t.completed,
-        todoId: t.id,
+    return todos.map((todo) => {
+      const feature = new Feature({
+        geometry: new Point(fromLonLat(todo.location)),
+        name: todo.name,
+        completed: todo.completed,
+        todoId: todo.id,
       });
-      f.setId(t.id);
-      return f;
+      feature.setId(todo.id);
+
+      return feature;
     });
   }, [todos]);
 
@@ -90,7 +90,7 @@ export default function TodoMap({ todos = [], height = 320 }: Props) {
       }),
     });
 
-    let pointerMoveKey: EventsKey | undefined;
+    let pointerMoveKey: EventsKey | undefined; // use let only if you must, prefere using const
     let mouseOutHandler: (() => void) | undefined;
 
 
@@ -111,16 +111,16 @@ export default function TodoMap({ todos = [], height = 320 }: Props) {
         map.getTargetElement().style.cursor = "";
       };
 
-      pointerMoveKey = map.on("pointermove", (evt) => {
-        if (evt.dragging) {
+      pointerMoveKey = map.on("pointermove", (event) => {
+        if (event.dragging) {
           hideTooltip();
           return;
         }
 
         const el = tooltipElRef.current!;
         const feature = map.forEachFeatureAtPixel(
-          evt.pixel,
-          (f) => f,
+          event.pixel,
+          (f) => f, // rename f-> feature
           { hitTolerance: 6 }
         ) as Feature | undefined;
 
@@ -132,12 +132,12 @@ export default function TodoMap({ todos = [], height = 320 }: Props) {
         const name = String(feature.get("name") ?? "");
         el.textContent = name;
 
-        const geom = feature.getGeometry();
-        if (geom instanceof Point) {
+        const geom = feature.getGeometry(); // rename geom to geometry or a diff name that explains more
+        if (geom instanceof Point) 
           overlay.setPosition(geom.getCoordinates());
-        } else {
-          overlay.setPosition(evt.coordinate);
-        }
+         else 
+          overlay.setPosition(event.coordinate);
+        
 
         el.classList.add("is-visible");
         map.getTargetElement().style.cursor = "pointer";
@@ -151,9 +151,9 @@ export default function TodoMap({ todos = [], height = 320 }: Props) {
 
     return () => {
       if (pointerMoveKey) unByKey(pointerMoveKey);
-      if (mouseOutHandler) {
+      if (mouseOutHandler) 
         map.getTargetElement().removeEventListener("mouseout", mouseOutHandler);
-      }
+      
 
       map.setTarget(undefined);
       mapRef.current = null;
@@ -173,7 +173,7 @@ export default function TodoMap({ todos = [], height = 320 }: Props) {
     <Box
       sx={{
         position: "relative",
-        width: "100%",
+        width: "100%", // use 1 instead of "100%"
         height,
         borderRadius: 1,
         overflow: "hidden",

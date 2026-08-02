@@ -1,4 +1,3 @@
-// src/pages/AdminPage.tsx
 import {
   Box,
   Button,
@@ -29,6 +28,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import type { ColumnDef, SortingState } from "@tanstack/react-table";
+
 import { useTodos } from "../context/todos/useTodos";
 import type { Todo } from "../types/todo";
 import TodoDialog from "../components/todos/TodoDialog";
@@ -46,7 +46,7 @@ export default function AdminPage() {
   const { openAdd, openEdit } = dialog;
 
   const columns = useMemo<ColumnDef<Todo>[]>(
-    () => [
+    () => [ // try making in generic in a diff file if possible and then call the function with a const of all the headers/accessory key but keep actions out, because you handle it differently
       {
         accessorKey: "name",
         header: "Name",
@@ -103,7 +103,6 @@ export default function AdminPage() {
     [deleteTodo, toggleTodo, openEdit]
   );
 
-  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: todos,
     columns,
@@ -113,7 +112,7 @@ export default function AdminPage() {
     },
     onSortingChange: setSorting,
     globalFilterFn: (row, _columnId, filterValue) => {
-      const v = String(filterValue ?? "").trim().toLowerCase();
+      const v = String(filterValue ?? "").trim().toLowerCase(); // rename v -> value maybe?
       if (!v) return true;
       return row.original.name.toLowerCase().includes(v);
     },

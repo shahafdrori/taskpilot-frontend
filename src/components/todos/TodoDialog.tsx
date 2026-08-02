@@ -1,4 +1,3 @@
-//src/components/todos/TodoDialog.tsx
 import React from "react";
 import {
   Button,
@@ -28,7 +27,7 @@ export type TodoFormValues = {
   location: LonLat | null;
 };
 
-type Props = {
+type Props = { // rename
   open: boolean;
   mode: "add" | "edit";
   initialValues?: TodoFormValues;
